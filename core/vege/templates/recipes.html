@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Recipe</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            resize: none;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            border: none;
+            font-size: 16px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .table_container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        img {
+            max-width: 100px;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        .search-container {
+            height: 50px;
+            position: absolute;
+            top: 15px;
+            right: 120px;
+            display: flex;
+            /* align-items: center; */
+            border: 2px solid #ccc;
+            border-radius: 25px;
+            overflow: hidden;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-container input[type="text"] {
+            border: none;
+            padding: 10px 20px;
+            outline: none;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        .search-container button {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 0 25px 25px 0;
+            transition: background-color 0.3s;
+        }
+
+        .search-container button:hover {
+            background-color: #0056b3;
+        }
+
+
+
+        .logout-button {
+            /* height: 50px; */
+            position: absolute;
+            top: 15px;
+            right: 10px;
+            display: flex;
+            /* display: flex; */
+            /* overflow: hidden; */
+            padding: 6px 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #dc3545;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- <nav class="navbar"> -->
+    <a href="/logout/" class="logout-button">Logout</a>
+    <!-- </nav> -->
+
+    <div class="container">
+        <h1>Add Recipe</h1>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="recipe-name">Recipe Name</label>
+            <input type="text" id="recipe-name" name="recipe_name" placeholder="Enter recipe name" required>
+
+            <label for="recipe-description">Recipe Description</label>
+            <textarea id="recipe-description" name="recipe_description" placeholder="Enter recipe description"
+                required></textarea>
+
+            <label for="recipe-image">Recipe Image</label>
+            <input type="file" id="recipe-image" name="recipe_image" accept="image/*" required>
+
+            <button type="submit">Add Recipe</button>
+        </form>
+    </div>
+
+    <form>
+        <div class="search-container">
+            <input size="90px" type="text" name="search" placeholder="Search...">
+            <button type="submit">Search</button>
+        </div>
+    </form>
+
+
+    <div class="table_container">
+        <h1>Recipe List</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>S.N.</th>
+                    <th>Recipe Name</th>
+                    <th>Recipe Description</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for recipe in recipes %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{recipe.recipe_name}}</td>
+                    <td>{{recipe.recipe_description}}</td>
+                    <td><img src="/media/{{recipe.recipe_image}}"></td>
+                    <td>
+                        <a href="update-recipe/{{recipe.id}}/" style="
+                        background-color: #28a745;
+                        border: none;
+                        color: white;
+                        padding: 15px 32px;
+                        text-align: center;
+                        text-decoration: none;
+                        display: inline-block;
+                        font-size: 16px;
+                        /* margin: 4px 2px; */
+                        cursor: pointer;
+                        border-radius: 12px;
+                        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                    " onmouseover="this.style.backgroundColor='#218838'; this.style.boxShadow='0 4px 8px rgba(0, 0, 0, 0.2)';"
+                            onmouseout="this.style.backgroundColor='#28a745'; this.style.boxShadow='none';">
+                            Update
+                        </a>
+                        <a href="delete-recipe/{{recipe.id}}/" style="
+                        background-color: #e74c3c;
+                        border: none;
+                        color: white;
+                        padding: 15px 32px;
+                        text-align: center;
+                        text-decoration: none;
+                        display: inline-block;
+                        font-size: 16px;
+                        /* margin: 4px 2px; */
+                        cursor: pointer;
+                        border-radius: 12px;
+                        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                    " onmouseover="this.style.backgroundColor='#c0392b'; this.style.boxShadow='0 4px 8px rgba(0, 0, 0, 0.2)';"
+                            onmouseout="this.style.backgroundColor='#e74c3c'; this.style.boxShadow='none';">
+                            Delete
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                <!-- Add more rows as needed -->
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
