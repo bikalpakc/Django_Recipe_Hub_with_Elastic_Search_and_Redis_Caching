@@ -6,8 +6,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
+from django.conf import settings
+from django.core.cache.backends.base import DEFAULT_TIMEOUT
+from django.views.decorators.cache import cache_page
+from django.core.cache import cache
 # Create your views here.
+
+CACHE_TTL=getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 @login_required(login_url='/login/')
 def recipe_page(request):
@@ -31,7 +36,16 @@ def recipe_page(request):
     queryset= Recipe.objects.all()
 
     if request.GET.get('search'):
-       queryset=queryset.filter(recipe_name__icontains=request.GET.get('search'))
+      search_content=request.GET.get('search')
+    
+      if cache.get(search_content):
+          print("Data from Cache")
+          queryset=cache.get(search_content)
+
+      else:    
+         print("Data from Database")
+         queryset=queryset.filter(recipe_name__icontains=search_content)
+         cache.set(search_content, queryset)  #This search_contetn and it's equivalent queryset is now stored in cache side by side as a key value pair.
 
     context={'recipes': queryset}
 
