@@ -45,7 +45,7 @@ def recipe_page(request):
       else:    
          print("Data from Database")
          queryset=queryset.filter(recipe_name__icontains=search_content)
-         cache.set(search_content, queryset)  #This search_contetn and it's equivalent queryset is now stored in cache side by side as a key value pair.
+         cache.set(search_content, queryset)  #This 'search_content' and it's equivalent 'queryset' is now stored in cache side by side as a key value pair.
 
     context={'recipes': queryset}
 
