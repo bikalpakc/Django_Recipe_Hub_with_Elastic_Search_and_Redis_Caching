@@ -10,6 +10,8 @@ from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 from django.views.decorators.cache import cache_page
 from django.core.cache import cache
+from .documents import RecipeDocument
+from elasticsearch_dsl.query import MultiMatch
 # Create your views here.
 
 CACHE_TTL=getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
@@ -44,7 +46,10 @@ def recipe_page(request):
 
       else:    
          print("Data from Database")
-         queryset=queryset.filter(recipe_name__icontains=search_content)
+         queryset=queryset.filter(recipe_name__icontains=search_content)  #Implementing Normal Search based on recipe name only.
+         # # queryset=RecipeDocument.search().query('match', recipe_name=search_content)  #Implementing Elastic Search based on recipe name only.
+         # query=MultiMatch(query=search_content, fields=['recipe_name', 'recipe_description'])
+         # queryset=RecipeDocument.search().query(query)  #Implementing Elastic search based on Recipe name and description.
          cache.set(search_content, queryset)  #This 'search_content' and it's equivalent 'queryset' is now stored in cache side by side as a key value pair.
 
     context={'recipes': queryset}
