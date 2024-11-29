@@ -47,9 +47,9 @@ def recipe_page(request):
       else:    
          print("Data from Database")
          queryset=queryset.filter(recipe_name__icontains=search_content)  #Implementing Normal Search based on recipe name only.
-         # # queryset=RecipeDocument.search().query('match', recipe_name=search_content)  #Implementing Elastic Search based on recipe name only.
-         # query=MultiMatch(query=search_content, fields=['recipe_name', 'recipe_description'])
-         # queryset=RecipeDocument.search().query(query)  #Implementing Elastic search based on Recipe name and description.
+         # # queryset=RecipeDocument.search().query('match', recipe_name=search_content).to_queryset()  #Implementing Elastic Search based on recipe name only."to_queryset()" transforms the result in the form of a queryset.
+         # query=MultiMatch(query=search_content, fields=['recipe_name', 'recipe_description'], fuzziness="AUTO")   #Fuziness makes the Recipes close to search term also discoverable during Search.
+         # queryset=RecipeDocument.search().query(query).to_queryset()  #Implementing Elastic search based on Recipe name and description."to_queryset()" transforms the result in the form of a queryset.
          cache.set(search_content, queryset)  #This 'search_content' and it's equivalent 'queryset' is now stored in cache side by side as a key value pair.
 
     context={'recipes': queryset}
